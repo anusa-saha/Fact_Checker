@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Misinformation Detection</title>
+</head>
+<body>
+    <h1>Misinformation Detection Chatbot</h1>
+    <form id="claim-form">
+        <label>Enter a Claim:</label>
+        <input type="text" id="claim" placeholder="Enter your claim">
+        <button type="button" onclick="submitClaim()">Analyze</button>
+    </form>
+    <form id="image-form" enctype="multipart/form-data">
+        <label>Upload Screenshot:</label>
+        <input type="file" id="image">
+        <button type="button" onclick="uploadImage()">Extract Text</button>
+    </form>
+    <div id="response"></div>
+
+    <script>
+        async function submitClaim() {
+            const claim = document.getElementById('claim').value;
+            const response = await fetch('/analyze', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ claim })
+            });
+            const data = await response.json();
+            document.getElementById('response').textContent = JSON.stringify(data, null, 2);
+        }
+
+        async function uploadImage() {
+            const image = document.getElementById('image').files[0];
+            const formData = new FormData();
+            formData.append('file', image);
+
+            const response = await fetch('/ocr', { method: 'POST', body: formData });
+            const data = await response.json();
+            document.getElementById('response').textContent = JSON.stringify(data, null, 2);
+        }
+    </script>
+</body>
+</html>
